@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alexander Wright — Architecture & Design Portfolio</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            warmWhite: '#F8F7F4',
+            softBeige: '#EFEAE3',
+            charcoalBlack: '#1C1C1A',
+            warmBronze: '#A7855B',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+            heading: ['Manrope', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- React & Babel CDNs -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background-color: #F8F7F4;
+      color: #111111;
+      font-family: 'Inter', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Manrope', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F8F7F4;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D1C9BD;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A7855B;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-[#F8F7F4] text-[#111111] antialiased selection:bg-[#A7855B]/20 selection:text-[#111111]">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- DATA ---
+    const PROJECTS = [
+      {
+        id: 'lumina-sanctuary',
+        title: 'Lumina Alpine Sanctuary',
+        category: 'Architecture',
+        description: 'A minimalist retreat carved into the Swiss Alps, blending raw concrete, warm timber, and panoramic glass framing.',
+        longDescription: 'Lumina Alpine Sanctuary is a study in quiet monumentality. Positioned at 2,400 meters elevation, the residence balances extreme climatic resilience with poetic openness to nature. The interior employs board-formed concrete and fumed oak.',
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop',
+        gallery: [
+          'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop'
+        ],
+        technologies: ['Rhino 3D', 'Revit', 'Sustainable Timber', 'Passive Thermal Design'],
+        client: 'Private Foundation Zurich',
+        year: '2025',
+        metrics: [
+          { label: 'Energy Efficiency', value: 'Net Zero A+' },
+          { label: 'Thermal Retention', value: '+42% vs Standard' },
+          { label: 'Built Area', value: '640 m²' }
+        ],
+        problem: 'Designing a residential structure capable of surviving severe alpine snow loads while maximizing natural daylight.',
+        solution: 'Engineered an interlocking cantilevered concrete shell with triple-glazed acoustic thermal glass.'
+      },
+      {
+        id: 'atelier-osaka',
+        title: 'Atelier Koto Spatial OS',
+        category: 'UI/UX',
+        description: 'An immersive digital design workspace for master craftsmen in Kyoto, combining tactile gestures with serene typography.',
+        longDescription: 'Atelier Koto needed an operating system for bespoke woodworking commissions that felt as deliberate and unhurried as craft itself.',
+        image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop',
+        gallery: [
+          'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop'
+        ],
+        technologies: ['React 19', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+        client: 'Koto Woodworks Kyoto',
+        year: '2025',
+        metrics: [
+          { label: 'Task Speed', value: '+68%' },
+          { label: 'Client Retention', value: '99.4%' },
+          { label: 'Design Tokens', value: '450+' }
+        ],
+        problem: 'Craftsmen struggled with clunky enterprise CAD software that broke creative focus.',
+        solution: 'Created a minimalist, distraction-free spatial canvas with gesture-driven controls.'
+      },
+      {
+        id: 'monolith-pavilions',
+        title: 'Monolith Cultural Pavilion',
+        category: 'Spatial Design',
+        description: 'A subterranean exhibition space in Copenhagen exploring the intersection of raw stone, light shafts, and silence.',
+        longDescription: 'Conceived as a secular temple of contemplation, utilizing precision-cut Danish limestone and controlled skylights.',
+        image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200&auto=format&fit=crop',
+        gallery: [
+          'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200&auto=format&fit=crop'
+        ],
+        technologies: ['AutoCAD', 'Light Simulation', 'Natural Stone Masonry'],
+        client: 'Nordic Art Council',
+        year: '2024',
+        metrics: [
+          { label: 'Satisfaction', value: '4.98 / 5.0' },
+          { label: 'Reverberation', value: '0.4s' },
+          { label: 'Annual Footfall', value: '320,000' }
+        ],
+        problem: 'Creating an underground public pavilion in central Copenhagen that feels airy and luminous.',
+        solution: 'Implemented inverted pyramidal light chimneys and polished limestone floors.'
+      }
+    ];
+
+    const SKILL_CATEGORIES = [
+      {
+        name: 'Design & Architecture',
+        skills: [
+          { name: 'Spatial & Interior Architecture', level: 98, description: 'Mastery of volumetric proportions and natural lighting.' },
+          { name: 'UI / UX Design', level: 96, description: 'Intuitive user journeys, design systems, and micro-interactions.' },
+          { name: 'Design Systems', level: 95, description: 'Scalable multi-platform component architectures.' }
+        ]
+      },
+      {
+        name: 'Engineering & Frontend',
+        skills: [
+          { name: 'React 19 & Next.js', level: 95, description: 'Advanced server components and concurrent rendering.' },
+          { name: 'TypeScript', level: 94, description: 'Rigorous type safety and robust patterns.' },
+          { name: 'Tailwind CSS', level: 98, description: 'Custom design tokens and fluid typography.' }
+        ]
+      }
+    ];
+
+    const EXPERIENCES = [
+      {
+        id: 'exp-1',
+        company: 'Atelier Wright & Associates',
+        role: 'Principal Architect & Design Director',
+        duration: '2021 — Present',
+        location: 'Kyoto & San Francisco',
+        description: 'Directing high-end architectural commissions and digital spatial experiences.',
+        responsibilities: [
+          'Led master planning of 8 award-winning residential sanctuaries.',
+          'Established digital product division for spatial apps.'
+        ],
+        technologies: ['Revit', 'React', 'TypeScript', 'Tailwind']
+      },
+      {
+        id: 'exp-2',
+        company: 'Studio Nordic & Co.',
+        role: 'Lead Senior Product Designer',
+        duration: '2018 — 2021',
+        location: 'Copenhagen, Denmark',
+        description: 'Spearheaded digital transformation and interface design systems.',
+        responsibilities: [
+          'Architected flagship e-commerce and 3D room configurator.',
+          'Mentored team of 10 UI/UX designers.'
+        ],
+        technologies: ['Figma', 'Next.js', 'WebGL']
+      }
+    ];
+
+    const SERVICES = [
+      { title: 'Architectural & Spatial Design', subtitle: 'Built Environment', description: 'Bespoke residential and cultural architecture rooted in minimalism.' },
+      { title: 'UI/UX & Product Design', subtitle: 'Digital Interfaces', description: 'Human-centric digital products and web applications.' },
+      { title: 'Design Systems Architecture', subtitle: 'Scalable Foundations', description: 'Robust, tokenized component libraries.' },
+      { title: 'Brand Identity & Direction', subtitle: 'Visual Luxury', description: 'Cohesive brand ecosystems and custom typography.' }
+    ];
+
+    const TESTIMONIALS = [
+      {
+        name: 'Elena Rostova',
+        position: 'Managing Director',
+        company: 'Nordic Heritage Foundation',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop',
+        content: 'Alexander possesses a rare dual mastery of physical architecture and digital systems. The alpine sanctuary is a masterpiece.',
+        rating: 5
+      },
+      {
+        name: 'Kenji Takahashi',
+        position: 'Founder & Master Craftsman',
+        company: 'Koto Woodworks Kyoto',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop',
+        content: 'Working with Alexander on our digital spatial OS was transformative. Breathtaking grace and precision.',
+        rating: 5
+      }
+    ];
+
+    const BLOG_POSTS = [
+      {
+        id: 'blog-1',
+        title: 'The Architecture of Silence: Designing for Focus',
+        excerpt: 'Exploring how Japanese residential architecture guides modern digital interface design.',
+        category: 'Design Philosophy',
+        date: 'June 18, 2026',
+        readTime: '5 min read',
+        thumbnail: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=800&auto=format&fit=crop',
+        content: 'In an era of relentless notifications, the most luxurious commodity is silence. By applying "Ma" to software interfaces, we create cognitive breathing room.'
+      }
+    ];
+
+    // --- COMPONENTS ---
+    function Navbar({ onOpenAI }) {
+      const [scrolled, setScrolled] = useState(false);
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      return (
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-[#F8F7F4]/90 backdrop-blur-md shadow-sm py-4 border-b border-[#E5E5E5]' : 'bg-transparent py-6'}`}>
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
+            <a href="#home" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-full bg-[#111111] text-[#F8F7F4] flex items-center justify-center font-bold tracking-widest text-sm">AW</div>
+              <div className="hidden sm:block">
+                <span className="font-semibold tracking-wider text-sm block text-[#111111]">ALEXANDER WRIGHT</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#666666] block">Architect & Designer</span>
+              </div>
+            </a>
+
+            <nav className="hidden lg:flex items-center gap-1 bg-[#111111]/5 backdrop-blur-md px-3 py-1.5 rounded-full border border-[#111111]/10">
+              {['Home', 'Projects', 'About', 'Skills', 'Experience', 'Services', 'Blog', 'Contact'].map((item) => (
+                <a key={item} href={`#${item.toLowerCase()}`} className="px-4 py-1.5 rounded-full text-xs font-medium text-[#666666] hover:text-[#111111] hover:bg-[#111111]/5 transition-all">
+                  {item}
+                </a>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <button onClick={onOpenAI} className="flex items-center gap-2 bg-[#A7855B]/10 hover:bg-[#A7855B]/20 text-[#A7855B] border border-[#A7855B]/30 px-4 py-2 rounded-full text-xs font-semibold tracking-wider transition-all shadow-sm">
+                <span>Ask AI Curator</span>
+              </button>
+              <a href="#contact" className="hidden sm:flex items-center gap-2 bg-[#111111] hover:bg-[#333333] text-[#FFFFFF] px-5 py-2 rounded-full text-xs font-medium tracking-wide transition-all shadow-sm">
+                <span>Let's Talk</span>
+              </a>
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden p-2 rounded-full bg-[#111111]/5 text-[#111111]">
+                ☰
+              </button>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    function Hero() {
+      return (
+        <section id="home" className="relative min-h-screen flex items-center justify-center bg-[#1C1C1A] text-[#F8F7F4] overflow-hidden pt-24 pb-16">
+          <div className="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop" alt="Hero" className="w-full h-full object-cover opacity-35" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A] via-[#1C1C1A]/85 to-transparent"></div>
+          </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-8 flex flex-col items-start gap-6">
+              <div className="inline-flex items-center gap-2 bg-[#A7855B]/20 border border-[#A7855B]/40 px-4 py-1.5 rounded-full text-xs font-medium tracking-widest text-[#D4B592] uppercase">
+                Principal Architect & Design Director
+              </div>
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#F8F7F4] leading-[1.08]">
+                Crafting Digital <br />
+                <span className="font-serif italic font-normal text-[#D4B592]">Experiences</span> That <br />
+                Feel Human.
+              </h1>
+              <p className="text-base sm:text-lg text-[#C2C2BD] font-light max-w-2xl leading-relaxed">
+                I design and develop elegant digital products and physical spaces combining Japanese minimalism and Scandinavian simplicity.
+              </p>
+              <div className="flex flex-wrap items-center gap-4 pt-4">
+                <a href="#projects" className="bg-[#F8F7F4] text-[#1C1C1A] px-8 py-4 rounded-full text-sm font-semibold tracking-wide shadow-lg hover:scale-105 transition-all">
+                  View Projects
+                </a>
+                <a href="#contact" className="border border-[#F8F7F4]/30 text-[#F8F7F4] px-8 py-4 rounded-full text-sm font-medium hover:bg-[#F8F7F4]/10 transition-all">
+                  Contact Me
+                </a>
+              </div>
+              <div className="grid grid-cols-3 gap-8 pt-10 border-t border-[#F8F7F4]/10 w-full max-w-lg mt-6">
+                <div><span className="block text-2xl font-serif text-[#D4B592]">12+</span><span className="text-xs uppercase text-[#8C8C8C]">Years Exp</span></div>
+                <div><span className="block text-2xl font-serif text-[#D4B592]">48+</span><span className="text-xs uppercase text-[#8C8C8C]">Projects</span></div>
+                <div><span className="block text-2xl font-serif text-[#D4B592]">15</span><span className="text-xs uppercase text-[#8C8C8C]">Awards</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Projects({ onSelectProject }) {
+      const [filter, setFilter] = useState('All');
+      const filtered = filter === 'All' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
+
+      return (
+        <section id="projects" className="py-28 bg-[#F8F7F4] text-[#111111]">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B] block mb-3">Curated Portfolio</span>
+                <h2 className="text-3xl sm:text-5xl font-bold tracking-tight">Featured <span className="font-serif italic font-normal text-[#A7855B]">Projects</span></h2>
+              </div>
+              <div className="flex flex-wrap gap-2 bg-[#EFEAE3] p-1.5 rounded-full border border-[#E5E5E5]">
+                {['All', 'Architecture', 'UI/UX', 'Spatial Design'].map(cat => (
+                  <button key={cat} onClick={() => setFilter(cat)} className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${filter === cat ? 'bg-[#111111] text-[#FFFFFF]' : 'text-[#666666]'}`}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filtered.map(project => (
+                <div key={project.id} onClick={() => onSelectProject(project)} className="group cursor-pointer bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#E5E5E5] shadow-sm hover:shadow-xl transition-all flex flex-col justify-between">
+                  <div className="relative h-72 overflow-hidden bg-[#EFEAE3]">
+                    <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute top-4 left-4 bg-[#111111]/80 text-[#F8F7F4] px-3 py-1 rounded-full text-[10px] uppercase font-medium">
+                      {project.category}
+                    </div>
+                  </div>
+                  <div className="p-6 sm:p-8 flex flex-col flex-grow justify-between gap-6">
+                    <div>
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-[#A7855B] transition-colors">{project.title}</h3>
+                      <p className="text-sm text-[#666666] line-clamp-2">{project.description}</p>
+                    </div>
+                    <div className="pt-4 border-t border-[#E5E5E5] flex items-center justify-between text-xs text-[#8C8C8C]">
+                      <span>{project.client}</span>
+                      <span className="text-[#A7855B] font-semibold">View Case Study →</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function About() {
+      return (
+        <section id="about" className="py-28 bg-[#1C1C1A] text-[#F8F7F4]">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 relative">
+              <div className="rounded-2xl overflow-hidden border border-[#F8F7F4]/15 shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop" alt="Alexander" className="w-full h-[520px] object-cover filter grayscale contrast-125" />
+              </div>
+            </div>
+            <div className="lg:col-span-7 flex flex-col gap-6">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B]">About Alexander Wright</span>
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight leading-[1.12]">
+                Bridging physical architecture and <span className="font-serif italic font-normal text-[#D4B592]">digital systems</span>.
+              </h2>
+              <p className="text-base sm:text-lg text-[#C2C2BD] font-light leading-relaxed">
+                With over a decade of multidisciplinary experience spanning Kyoto, Copenhagen, and San Francisco, I approach design through reductionism. Every line of code is refined until only the essential remains.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-[#F8F7F4]/15">
+                <div>
+                  <h3 className="text-sm font-semibold text-[#D4B592] uppercase mb-1">The Philosophy of "Ma"</h3>
+                  <p className="text-xs text-[#A3A39E]">Embracing negative space and deliberate quiet to give users cognitive breathing room.</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#D4B592] uppercase mb-1">Tactile Craftsmanship</h3>
+                  <p className="text-xs text-[#A3A39E]">Infusing digital interactions with authentic weights and textures found in nature.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Skills() {
+      const [tab, setTab] = useState(0);
+      return (
+        <section id="skills" className="py-28 bg-[#EFEAE3] text-[#111111]">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B] bg-[#F8F7F4] px-4 py-1.5 rounded-full border border-[#E5E5E5] inline-block mb-3">Expertise</span>
+              <h2 className="text-3xl sm:text-5xl font-bold">Technical & Spatial <span className="font-serif italic font-normal text-[#A7855B]">Capabilities</span></h2>
+            </div>
+            <div className="flex justify-center mb-12">
+              <div className="inline-flex bg-[#F8F7F4] p-1.5 rounded-full border border-[#E5E5E5]">
+                {SKILL_CATEGORIES.map((cat, idx) => (
+                  <button key={cat.name} onClick={() => setTab(idx)} className={`px-6 py-2 rounded-full text-xs font-semibold ${tab === idx ? 'bg-[#111111] text-[#FFFFFF]' : 'text-[#666666]'}`}>
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {SKILL_CATEGORIES[tab].skills.map((skill, i) => (
+                <div key={i} className="bg-[#F8F7F4] p-8 rounded-2xl border border-[#E5E5E5] flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <h3 className="font-bold">{skill.name}</h3>
+                      <span className="font-mono text-xs text-[#A7855B]">{skill.level}%</span>
+                    </div>
+                    <p className="text-xs text-[#666666] mb-6">{skill.description}</p>
+                  </div>
+                  <div className="w-full bg-[#EFEAE3] h-2 rounded-full overflow-hidden">
+                    <div className="bg-[#111111] h-full" style={{ width: `${skill.level}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Experience() {
+      return (
+        <section id="experience" className="py-28 bg-[#1C1C1A] text-[#F8F7F4]">
+          <div className="max-w-5xl mx-auto px-6 sm:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-20">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B] bg-[#F8F7F4]/5 px-4 py-1.5 rounded-full border border-[#F8F7F4]/10 inline-block mb-3">Career</span>
+              <h2 className="text-3xl sm:text-5xl font-bold">Career Journey & <span className="font-serif italic font-normal text-[#D4B592]">Leadership</span></h2>
+            </div>
+            <div className="border-l border-[#F8F7F4]/15 ml-4 sm:ml-28 space-y-16">
+              {EXPERIENCES.map(exp => (
+                <div key={exp.id} className="relative pl-8 sm:pl-12">
+                  <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-[#1C1C1A] border-2 border-[#A7855B]"></div>
+                  <div className="hidden sm:block absolute -left-36 top-1 text-right w-24">
+                    <span className="text-xs font-mono text-[#D4B592]">{exp.duration}</span>
+                  </div>
+                  <div className="bg-[#242422] p-8 rounded-2xl border border-[#F8F7F4]/10 shadow-xl">
+                    <h3 className="text-xl font-bold text-[#F8F7F4]">{exp.role}</h3>
+                    <p className="text-sm text-[#D4B592] font-medium mb-4">{exp.company} • {exp.location}</p>
+                    <p className="text-sm text-[#C2C2BD] mb-4">{exp.description}</p>
+                    <ul className="space-y-1 mb-4">
+                      {exp.responsibilities.map((r, i) => <li key={i} className="text-xs text-[#A3A39E]">• {r}</li>)}
+                    </ul>
+                    <div className="flex flex-wrap gap-2">
+                      {exp.technologies.map((t, i) => <span key={i} className="bg-[#1C1C1A] text-[#D4B592] px-3 py-1 rounded-full text-[10px] font-mono">{t}</span>)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Services() {
+      return (
+        <section id="services" className="py-28 bg-[#1C1C1A] text-[#F8F7F4] border-t border-[#F8F7F4]/10">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-20">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B] bg-[#F8F7F4]/5 px-4 py-1.5 rounded-full border border-[#F8F7F4]/10 inline-block mb-3">Offerings</span>
+              <h2 className="text-3xl sm:text-5xl font-bold">Services & <span className="font-serif italic font-normal text-[#D4B592]">Expertise</span></h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {SERVICES.map((srv, i) => (
+                <div key={i} className="bg-[#242422] p-8 rounded-2xl border border-[#F8F7F4]/10 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase font-mono text-[#8C8C8C] bg-[#1C1C1A] px-3 py-1 rounded-full">{srv.subtitle}</span>
+                    <h3 className="text-lg font-bold text-[#F8F7F4] mt-4 mb-2">{srv.title}</h3>
+                    <p className="text-xs text-[#C2C2BD] leading-relaxed">{srv.description}</p>
+                  </div>
+                  <a href="#contact" className="mt-6 text-xs text-[#D4B592] hover:underline">Inquire →</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Testimonials() {
+      const [idx, setIdx] = useState(0);
+      const curr = TESTIMONIALS[idx];
+      return (
+        <section className="py-28 bg-[#EFEAE3] text-[#111111]">
+          <div className="max-w-4xl mx-auto px-6 sm:px-8 text-center bg-[#F8F7F4] p-12 sm:p-16 rounded-3xl border border-[#E5E5E5] shadow-xl">
+            <p className="text-lg sm:text-xl font-serif italic mb-8">"{curr.content}"</p>
+            <div className="flex items-center justify-center gap-4">
+              <img src={curr.avatar} alt={curr.name} className="w-12 h-12 rounded-full object-cover border border-[#A7855B]" />
+              <div className="text-left">
+                <h4 className="font-bold text-sm">{curr.name}</h4>
+                <p className="text-xs text-[#666666]">{curr.position}, <span className="text-[#A7855B]">{curr.company}</span></p>
+              </div>
+            </div>
+            <div className="flex justify-center gap-2 mt-8">
+              {TESTIMONIALS.map((_, i) => (
+                <button key={i} onClick={() => setIdx(i)} className={`w-2.5 h-2.5 rounded-full ${idx === i ? 'bg-[#A7855B] w-6' : 'bg-[#D1C9BD]'}`} />
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Blog({ onSelectPost }) {
+      return (
+        <section id="blog" className="py-28 bg-[#1C1C1A] text-[#F8F7F4]">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8">
+            <div className="mb-16">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B]">Insights & Essays</span>
+              <h2 className="text-3xl sm:text-5xl font-bold mt-2">Modern <span className="font-serif italic font-normal text-[#D4B592]">Magazine</span></h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {BLOG_POSTS.map(post => (
+                <div key={post.id} onClick={() => onSelectPost(post)} className="bg-[#242422] rounded-3xl overflow-hidden border border-[#F8F7F4]/10 cursor-pointer group">
+                  <div className="h-64 overflow-hidden">
+                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  </div>
+                  <div className="p-8">
+                    <span className="text-xs text-[#A7855B] uppercase tracking-wider block mb-2">{post.category} • {post.readTime}</span>
+                    <h3 className="text-xl font-bold mb-3 group-hover:text-[#D4B592] transition-colors">{post.title}</h3>
+                    <p className="text-xs text-[#C2C2BD]">{post.excerpt}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Contact() {
+      const [submitted, setSubmitted] = useState(false);
+      return (
+        <section id="contact" className="py-28 bg-[#F8F7F4] text-[#111111]">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <div className="lg:col-span-5 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-widest text-[#A7855B] bg-[#EFEAE3] px-4 py-1.5 rounded-full inline-block mb-3">Get in Touch</span>
+                <h2 className="text-4xl sm:text-6xl font-bold mb-6">Let's Build Something <span className="font-serif italic font-normal text-[#A7855B]">Amazing</span>.</h2>
+                <p className="text-base text-[#666666]">Currently accepting architectural commissions and digital product leadership roles for Q3/Q4 2026.</p>
+              </div>
+              <div className="pt-6 border-t border-[#E5E5E5] space-y-2">
+                <span className="text-xs text-[#8C8C8C] block uppercase">Direct Email</span>
+                <a href="mailto:alexander@atelierwright.design" className="font-semibold text-lg hover:text-[#A7855B]">alexander@atelierwright.design</a>
+              </div>
+            </div>
+            <div className="lg:col-span-7 bg-[#FFFFFF] p-8 sm:p-12 rounded-3xl border border-[#E5E5E5] shadow-xl">
+              {submitted ? (
+                <div className="py-16 text-center">
+                  <h3 className="text-2xl font-bold mb-2">Message Dispatched</h3>
+                  <p className="text-sm text-[#666666]">Thank you. Alexander will respond within 24 hours.</p>
+                  <button onClick={() => setSubmitted(false)} className="mt-6 bg-[#111111] text-[#FFFFFF] px-6 py-2 rounded-full text-xs">Send Another</button>
+                </div>
+              ) : (
+                <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-6">
+                  <h3 className="text-2xl font-bold mb-4">Project Inquiry</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <input type="text" required placeholder="Your Name" className="bg-[#F8F7F4] border border-[#E5E5E5] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#A7855B]" />
+                    <input type="email" required placeholder="Email Address" className="bg-[#F8F7F4] border border-[#E5E5E5] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#A7855B]" />
+                  </div>
+                  <input type="text" required placeholder="Subject / Scope" className="w-full bg-[#F8F7F4] border border-[#E5E5E5] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#A7855B]" />
+                  <textarea rows={4} required placeholder="Describe your vision..." className="w-full bg-[#F8F7F4] border border-[#E5E5E5] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#A7855B] resize-none"></textarea>
+                  <button type="submit" className="w-full bg-[#111111] hover:bg-[#333333] text-[#FFFFFF] py-4 rounded-xl text-sm font-semibold transition-all">Send Message</button>
+                </form>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Footer() {
+      return (
+        <footer className="bg-[#1C1C1A] text-[#F8F7F4] pt-20 pb-12 border-t border-[#F8F7F4]/10">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#F8F7F4] text-[#1C1C1A] flex items-center justify-center font-bold">AW</div>
+              <span className="font-semibold text-sm">ALEXANDER WRIGHT</span>
+            </div>
+            <p className="text-xs text-[#8C8C8C]">© {new Date().getFullYear()} Alexander Wright. All rights reserved.</p>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-xs text-[#D4B592] hover:underline">Back to Top ↑</button>
+          </div>
+        </footer>
+      );
+    }
+
+    function ProjectModal({ project, onClose }) {
+      if (!project) return null;
+      return (
+        <div className="fixed inset-0 z-50 bg-[#111111]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#F8F7F4] text-[#111111] w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl p-8 max-h-[90vh] overflow-y-auto relative">
+            <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#EFEAE3] flex items-center justify-center font-bold">✕</button>
+            <span className="bg-[#111111] text-[#FFFFFF] px-3 py-1 rounded-full text-[10px] font-mono uppercase">{project.category}</span>
+            <h2 className="text-3xl font-bold mt-4 mb-2">{project.title}</h2>
+            <p className="text-sm text-[#666666] mb-6">{project.longDescription}</p>
+            <div className="h-72 rounded-2xl overflow-hidden mb-6">
+              <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+            </div>
+            <div className="grid grid-cols-3 gap-4 bg-[#EFEAE3] p-4 rounded-xl mb-6">
+              {project.metrics.map((m, i) => (
+                <div key={i}><span className="block text-xl font-serif text-[#A7855B]">{m.value}</span><span className="text-[10px] uppercase text-[#666666]">{m.label}</span></div>
+              ))}
+            </div>
+            <div className="space-y-4 text-sm text-[#666666]">
+              <p><strong>The Challenge:</strong> {project.problem}</p>
+              <p><strong>The Solution:</strong> {project.solution}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function AICuratorModal({ isOpen, onClose }) {
+      const [messages, setMessages] = useState([
+        { role: 'model', content: "Hello. I am Alexander's AI Curator. Ask me anything about his architectural projects, spatial design philosophy, or engineering stack." }
+      ]);
+      const [input, setInput] = useState('');
+
+      if (!isOpen) return null;
+
+      const handleSend = (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+        const userMsg = input.trim();
+        setInput('');
+        const updated = [...messages, { role: 'user', content: userMsg }];
+        setMessages(updated);
+        setTimeout(() => {
+          setMessages([...updated, { role: 'model', content: "Alexander approaches every commission by balancing unhurried spatial calm with high-performance React architecture. Would you like to discuss a specific residential or digital project?" }]);
+        }, 800);
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 bg-[#111111]/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#1C1C1A] text-[#F8F7F4] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
+            <div className="p-4 bg-[#242422] flex justify-between items-center border-b border-[#F8F7F4]/10">
+              <span className="text-xs font-semibold text-[#A7855B]">✨ Alexander's AI Curator</span>
+              <button onClick={onClose} className="text-[#8C8C8C] hover:text-[#FFFFFF]">✕</button>
+            </div>
+            <div className="flex-grow p-4 overflow-y-auto space-y-3">
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`p-3 rounded-2xl text-xs max-w-[80%] ${m.role === 'user' ? 'bg-[#A7855B] text-[#FFFFFF]' : 'bg-[#242422] text-[#C2C2BD]'}`}>
+                    {m.content}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleSend} className="p-3 bg-[#242422] border-t border-[#F8F7F4]/10 flex gap-2">
+              <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about projects or design philosophy..." className="flex-grow bg-[#1C1C1A] rounded-xl px-3 py-2 text-xs text-[#F8F7F4] focus:outline-none" />
+              <button type="submit" className="bg-[#A7855B] text-[#FFFFFF] px-4 py-2 rounded-xl text-xs">Send</button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [selectedProject, setSelectedProject] = useState(null);
+      const [selectedPost, setSelectedPost] = useState(null);
+      const [aiOpen, setAiOpen] = useState(false);
+
+      return (
+        <div className="min-h-screen bg-[#F8F7F4] text-[#111111]">
+          <Navbar onOpenAI={() => setAiOpen(true)} />
+          <Hero />
+          <Projects onSelectProject={setSelectedProject} />
+          <About />
+          <Skills />
+          <Experience />
+          <Services />
+          <Testimonials />
+          <Blog onSelectPost={setSelectedPost} />
+          <Contact />
+          <Footer />
+
+          <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+          <AICuratorModal isOpen={aiOpen} onClose={() => setAiOpen(false)} />
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
